@@ -5,6 +5,7 @@ from PPlay.window import *
 from PPlay.gameimage import *
 from PPlay.sprite import *
 from PPlay.keyboard import *
+from PPlay.mouse import *
 
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 400
@@ -33,122 +34,128 @@ def main():
 	ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
 	sep.set_position(WINDOW_WIDTH / 2, 0)
 
-	# velocidades
+	# velocidades (Mac) (antes do janela.delta_time())
+	"""
 	paddle_speed = 10
 	ball_speed_x = 2
 	ball_speed_y = 2
+	"""
+
+	# velocidades (Windows)
+	paddle_speed = 150
+	ball_speed_x = 150
+	ball_speed_y = 150
+	max_ball_speed = 300
+	speed_delta = 3
 
 	# scores
 	left_player = 0
 	right_player = 0
 
-
 	keyboard = Keyboard()
+	mouse = Mouse()
 
-	loss_count = 0
-	max_ball_speed = 0.05 * WINDOW_WIDTH
-	increase = 1
+	count = 0
 
-	while True: # game loop
+	while True:  # game loop
+
+		if keyboard.key_pressed("ESC"):
+			janela.close()
+			return
 
 		# movimentos da paddle esquerda
 		if keyboard.key_pressed("w"):
 			if left_paddle.y >= 0:
-				left_paddle.set_position(left_paddle.x, left_paddle.y - paddle_speed)
+				left_paddle.y -= paddle_speed * janela.delta_time()
+
 
 		elif keyboard.key_pressed("s"):
 			if left_paddle.y <= WINDOW_HEIGHT - PADDLE_HEIGHT:
-				left_paddle.set_position(left_paddle.x, left_paddle.y + paddle_speed)
+				left_paddle.y += paddle_speed * janela.delta_time()
 
 		# movimentos da paddle direita
 		if keyboard.key_pressed("UP"):
 			if right_paddle.y >= 0:
-				right_paddle.set_position(right_paddle.x, right_paddle.y - paddle_speed)
+				right_paddle.y -= paddle_speed * janela.delta_time()
 
 		elif keyboard.key_pressed("DOWN"):
 			if right_paddle.y <= WINDOW_HEIGHT - PADDLE_HEIGHT:
-				right_paddle.set_position(right_paddle.x, right_paddle.y + paddle_speed)
+				right_paddle.y += paddle_speed * janela.delta_time()
+
+		# usando o mouse pra paddle direita
+		# right_paddle.set_position(right_paddle.x, mouse.get_position()[1])
 
 		# movimento automático da bola
-		ball.set_position(ball.x + ball_speed_x, ball.y + ball_speed_y)
+		# ball.set_position(ball.x + ball_speed_x, ball.y + ball_speed_y)
+		ball.x += ball_speed_x * janela.delta_time()
+		ball.y += ball_speed_y * janela.delta_time()
+
 
 		# colisões com as paddles
-		"""
 		if left_paddle.collided(ball) or right_paddle.collided(ball):
-		    ball_speed_x = 0 - ball_speed_x
+			ball_speed_x = - ball_speed_x
 
-		    if (ball.y + BALL_SIZE / 2 > left_paddle.y + PADDLE_HEIGHT / 2) or
-				 (ball.y + BALL_SIZE / 2 > right_paddle.y + PADDLE_HEIGHT / 2):
-		        ball_speed_y = abs(ball_speed_y)
+			if (ball.y + BALL_SIZE / 2 > left_paddle.y + PADDLE_HEIGHT / 2) or (ball.y + BALL_SIZE / 2 > right_paddle.y + PADDLE_HEIGHT / 2):
+				ball_speed_y = abs(ball_speed_y)
 
-		    else:
-		        ball_speed_y = 0 - abs(ball_speed_y)
-		"""
+			else:
+				ball_speed_y = - abs(ball_speed_y)
 
 		# colisão com a parede esquerda
 		if ball.x <= 0:
-			loss_count += 1
-			if loss_count % 2 == 0 and ball_speed_x <= max_ball_speed and ball_speed_y <= max_ball_speed:
+			"""
+			count += 1
+			if count % 2 == 0 and ball_speed_x <= max_ball_speed:
 				if ball_speed_x >= 0:
-					ball_speed_x += increase
+					ball_speed_x += speed_delta
 
 				else:
-					ball_speed_x -= increase
+					ball_speed_x -= speed_delta
+			"""
 
-				print("Ball speed: ", ball_speed_x, ball_speed_y)
 			ball_speed_x = - ball_speed_x
-			
 			right_player += 1
+			print("score: ", left_player, " x ", right_player)
+			ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # reseta bola para o centro
 
-			print("SCORE: ", left_player, "x", right_player)
-			# ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
-			
 		# Colisao na parede direita
 		if ball.x >= WINDOW_WIDTH:
-			loss_count += 1
-
-			if loss_count % 2 == 0 and ball_speed_x <= WINDOW_WIDTH * 0.05 and ball_speed_y <= WINDOW_HEIGHT * 0.05:
+			"""
+			count += 1
+			if count % 2 == 0 and ball_speed_x <= max_ball_speed:
 				if ball_speed_x >= 0:
-					ball_speed_x += increase
+					ball_speed_x += speed_delta
 
 				else:
-					ball_speed_x -= increase
-
-				print("Ball speed:", ball_speed_x, ball_speed_y)
+					ball_speed_x -= speed_delta
+			"""
 
 			ball_speed_x = - ball_speed_x
 			left_player += 1
-
-			"""
-			print("SCORE: ", left_player, "x", right_player)
-			ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
-			"""
+			print("score: ", left_player, " x ", right_player)
+			ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)  # reseta bola para o centro
 
 		# colisões nas paredes superior e inferior
-		if (ball.y <= 0) | (ball.y + BALL_SIZE / 2 >= WINDOW_HEIGHT):
-			loss_count += 1
+		if ball.y <= 0 or ball.y + BALL_SIZE / 2 >= WINDOW_HEIGHT:
+			"""
+			count += 1
 
-			if loss_count % 2 == 0 and ball_speed_x <= WINDOW_WIDTH * 0.05 and ball_speed_y <= WINDOW_HEIGHT * 0.05:
+			if count % 2 == 0 and ball_speed_y <= max_ball_speed:
 				if ball_speed_y >= 0:
-					ball_speed_y += increase
-					
-				else:
-					ball_speed_y -= increase
+					ball_speed_y += speed_delta
 
-				print("Ball speed: ", ball_speed_x, ball_speed_y)
+				else:
+					ball_speed_y -= speed_delta
+			"""
 
 			ball_speed_y = - ball_speed_y
 
-			"""
-			# ball_speed_y = 0 - ball_speed_y
-			"""
 
 		janela.set_background_color((0, 0, 0)) # black background
-		# left_paddle.draw()
-		# right_paddle.draw()
+		left_paddle.draw()
+		right_paddle.draw()
 		sep.draw()
 		ball.draw()
 		janela.update()
-
 
 main()
