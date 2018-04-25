@@ -42,9 +42,9 @@ def main():
 	"""
 
 	# velocidades (Windows)
-	paddle_speed = 150
-	ball_speed_x = 150
-	ball_speed_y = 150
+	paddle_speed = 170
+	ball_speed_x = 170
+	ball_speed_y = 170
 	max_ball_speed = 300
 	speed_delta = 3
 
@@ -156,6 +156,8 @@ def main():
 		right_paddle.draw()
 		sep.draw()
 		ball.draw()
+		janela.draw_text(str(left_player), WINDOW_WIDTH/2 - 40, 10, size=30, color=(255, 255, 255), font_name="Consolas", bold=True)
+		janela.draw_text(str(right_player), WINDOW_WIDTH/2 + 30, 10, size=30, color=(255, 255, 255), font_name="Consolas", bold=True)
 		janela.update()
 
 main()
