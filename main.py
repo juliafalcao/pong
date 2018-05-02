@@ -34,12 +34,6 @@ def main():
 	ball.set_position(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
 	sep.set_position(WINDOW_WIDTH / 2, 0)
 
-	# velocidades (Mac) (antes do janela.delta_time())
-	"""
-	paddle_speed = 10
-	ball_speed_x = 2
-	ball_speed_y = 2
-	"""
 
 	# velocidades (Windows)
 	paddle_speed = 170
@@ -48,16 +42,18 @@ def main():
 	max_ball_speed = 300
 	speed_delta = 3
 
+	ia_right_paddle_speed = 300
+
 	# scores
 	left_player = 0
 	right_player = 0
 
 	keyboard = Keyboard()
-	mouse = Mouse()
 
 	count = 0
 
 	while True:  # game loop
+		time = janela.delta_time()
 
 		if keyboard.key_pressed("ESC"):
 			janela.close()
@@ -66,29 +62,44 @@ def main():
 		# movimentos da paddle esquerda
 		if keyboard.key_pressed("w"):
 			if left_paddle.y >= 0:
-				left_paddle.y -= paddle_speed * janela.delta_time()
+				left_paddle.y -= paddle_speed * time
 
 
 		elif keyboard.key_pressed("s"):
 			if left_paddle.y <= WINDOW_HEIGHT - PADDLE_HEIGHT:
-				left_paddle.y += paddle_speed * janela.delta_time()
+				left_paddle.y += paddle_speed * time
 
 		# movimentos da paddle direita
+		"""
 		if keyboard.key_pressed("UP"):
 			if right_paddle.y >= 0:
-				right_paddle.y -= paddle_speed * janela.delta_time()
+				right_paddle.y -= paddle_speed * time
 
 		elif keyboard.key_pressed("DOWN"):
 			if right_paddle.y <= WINDOW_HEIGHT - PADDLE_HEIGHT:
-				right_paddle.y += paddle_speed * janela.delta_time()
+				right_paddle.y += paddle_speed * time
+		"""
+
+
+		# IA
+		if ball.y > left_paddle.y + PADDLE_HEIGHT / 2:
+			ia_right_paddle_speed = abs(ia_right_paddle_speed)
+
+		else:
+			ia_right_paddle_speed = - abs(ia_right_paddle_speed)
+
+
+		right_paddle.y += ia_right_paddle_speed * time
+
+
 
 		# usando o mouse pra paddle direita
 		# right_paddle.set_position(right_paddle.x, mouse.get_position()[1])
 
 		# movimento automático da bola
 		# ball.set_position(ball.x + ball_speed_x, ball.y + ball_speed_y)
-		ball.x += ball_speed_x * janela.delta_time()
-		ball.y += ball_speed_y * janela.delta_time()
+		ball.x += ball_speed_x * time
+		ball.y += ball_speed_y * time
 
 
 		# colisões com as paddles
